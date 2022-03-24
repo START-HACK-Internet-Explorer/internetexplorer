@@ -1,0 +1,28 @@
+.header {
+    background-color: black;
+    display: flex;
+    color:lightgray;
+    font-size: 15pt;
+}
+
+.header h1{
+    padding:0;
+    float:right;
+    
+}
+
+.header p:hover{
+    transition:1s;
+    color:white;
+}
+
+.logo {
+    float:left;
+}
+
+.header img{
+    max-width: 30%;
+    min-height: 20pt;
+}
+
+

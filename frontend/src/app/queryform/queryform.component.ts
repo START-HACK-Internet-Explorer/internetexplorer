@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SearchService } from '../search.service';
 
 @Component({
   selector: 'app-queryform',
@@ -6,10 +7,24 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./queryform.component.scss']
 })
 export class QueryformComponent implements OnInit {
-
-  constructor() { }
+  from?: string;
+  to?:string;
+  departuretime?:string;
+  
+  constructor(private searchservice:SearchService) {
+    this.searchservice.search.subscribe(x => this.sendData())
+  }
 
   ngOnInit(): void {
+  }
+
+  sendData(){
+    const dataToSend ={
+      from: this.from,
+      to: this.to,
+      departuretime: this.departuretime,
+    }
+    console.log(dataToSend)
   }
 
 }
