@@ -31,11 +31,12 @@ interface JourneyFound extends Journey {
 
 interface User {
   journeys: JourneyInfo[];
+  previousSearchJourneys: JourneyInfo[];
 }
 
 interface MessageToServer {
-  type: 'search' | 'getLast';
-  content?: Journey;
+  type: 'search' | 'getLast' | 'set';
+  content?: Journey | number;
 }
 
 interface MessageFromServer {
@@ -135,15 +136,25 @@ const webSocket = app.ws('/*', {
           switch (receivedMessage.type) {
             case 'search':
               const result = await searchJourney(receivedMessage.content as Journey);
+              ws.user.previousSearchJourneys = result;
               if (result) {
                 ws.send(JSON.stringify({type: 'journeyInfo', content: result} as MessageFromServer));
               } else {
                 ws.send(JSON.stringify({type: 'fail'} as MessageFromServer));
               }
               break;
+
+            case 'set':
+              if (typeof(receivedMessage.content) === 'number') {
+                const set = ws.user.previousSearchJourneys[receivedMessage.content];
+                if (set) {
+                  ws.user.journeys.push(set);
+                }
+              }
+              break;
     
             case 'getLast':
-              ws.send(JSON.stringify({type: 'lastJourneys', content: ws.user} as MessageFromServer));
+              ws.send(JSON.stringify({type: 'lastJourneys', content: ws.user.journeys} as MessageFromServer));
               break;
           }
         }
@@ -171,7 +182,7 @@ const adduser = (): string => {
     if (users[userId]) {
       return adduser();
     } else {
-      users[userId] = { journeys: [] as JourneyInfo[] };
+      users[userId] = { journeys: [] as JourneyInfo[], previousSearchJourneys: [] as JourneyInfo[] };
       console.log('added user');
     }
     return userId;
@@ -191,11 +202,12 @@ const searchJourney = async (journey: Journey): Promise<JourneyInfo[]> => {
       const response = await axios.get('http://transport.opendata.ch/v1/connections', { params });
       console.log(response?.data);
       if (response?.data?.connections.length) {
-        return response.data.connections.map((connection: any) => ({
+        const connections = response.data.connections.map((connection: any) => ({
           searchStart: journey.start, searchStop: journey.stop, searchTime: journey.time,
           start: connection.from.station.name, stop: connection.to.station.name, time: moment(connection.from.departure),
           duration: moment.duration(connection.duration.replace(/d\d{2}:\d{2}:\d{2}$/, '') + ' ' + connection.duration.replace(/^\d{2}d/, '')).valueOf(), spots: 3, occupied: [[new Date(new Date().getTime() + 3000), 60], [new Date(new Date().getTime() + 6000), 70], [new Date(new Date().getTime() + 9000), 80]], recommended: new Date(new Date().getTime() + 6000), alternative: response?.connections
         })) as JourneyInfo[];
+        return connections;
       }
     }
   } catch (error) {
