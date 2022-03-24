@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { BackendService, JourneyInfo } from '../backend.service';
 import { ActivatedRoute } from '@angular/router';
@@ -8,17 +8,13 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent {
 
   journeyDetails: BehaviorSubject<JourneyInfo | null>;
 
   constructor(private backendService: BackendService, private activatedRoute:ActivatedRoute) {
     this.journeyDetails = backendService.journeyInfo;
     this.journeyDetails.subscribe(blah => console.log(blah))
-    
-  }
-
-  ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe(params => {
 
       let start = params['start'];
@@ -30,7 +26,16 @@ export class SearchComponent implements OnInit {
       console.log(time);
 
 
-      this.backendService.search('Zug', 'Luzern', new Date(new Date().getTime() + 10000));
+      let first = true;
+      this.backendService.connectionStateChanged.subscribe(connectionState => {
+        if (connectionState) {
+          if (first) {
+            this.backendService.search('Zug', 'Luzern', new Date(new Date().getTime() + 10000));
+          }
+          first = false;
+        }
+      });
+
      //this.backendService.search('','',new Date(new Date().getTime() + 10000)))
     });
   }
