@@ -7,6 +7,9 @@ interface Journey {
 }
 
 interface JourneyInfo extends Journey {
+  searchStart: string,
+  searchStop: string,
+  searchTime: Date,
   start: string;
   stop: string;
   time: Date;
@@ -37,7 +40,7 @@ interface MessageToServer {
 
 interface MessageFromServer {
   type: 'connectionInfo' | 'journeyInfo' | 'fail' | 'lastJourneys';
-  content?: string | JourneyInfo | JourneyInfo[];
+  content?: string | JourneyInfo[];
 }
 
 require('dotenv').config();
@@ -129,7 +132,7 @@ const webSocket = app.ws('/*', {
         if (receivedMessage) {
           switch (receivedMessage.type) {
             case 'search':
-              const result = await searchJourney(receivedMessage.content as JourneyInfo);
+              const result = await searchJourney(receivedMessage.content as Journey);
               if (result) {
                 ws.send(JSON.stringify({type: 'journeyInfo', content: result} as MessageFromServer));
               } else {
@@ -172,7 +175,7 @@ const adduser = (): string => {
     return userId;
 };
 
-const searchJourney = async (journey: Journey): Promise<JourneyInfo | null> => {
+const searchJourney = async (journey: Journey): Promise<JourneyInfo[]> => {
   try {
     if (journey.start && journey.stop && journey.time) {
       const params = {
@@ -187,15 +190,16 @@ const searchJourney = async (journey: Journey): Promise<JourneyInfo | null> => {
       console.log(response?.data);
       if (response?.data?.connections.length) {
         return response.data.connections.map((connection: any) => ({
+          searchStart: journey.start, searchStop: journey.stop, searchTime: journey.time,
           start: connection.from.station.name, stop: connection.to.station.name, time: moment(connection.from.departure),
           duration: moment.duration(connection.duration.replace(/d\d{2}:\d{2}:\d{2}$/, '') + ' ' + connection.duration.replace(/^\d{2}d/, '')).valueOf(), spots: 3, occupied: [[new Date(new Date().getTime() + 3000), 60], [new Date(new Date().getTime() + 6000), 70], [new Date(new Date().getTime() + 9000), 80]], recommended: new Date(new Date().getTime() + 6000), alternative: response?.connections
-        }) as JourneyInfo);
+        })) as JourneyInfo[];
       }
     }
   } catch (error) {
     console.error(error);
   }
-  return null;
+  return [];
 };
 
 const monitoringApp = sslKeyFile && sslCertFile ? uWebSocket.SSLApp({
