@@ -8,7 +8,7 @@ from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStoppi
 from tensorflow.keras.layers import *
 
 class Sbb():
-    def __init__(self, checkpoint_path, output_size, input_size = (4, )):
+    def __init__(self, checkpoint_path, output_size, input_size = (4, 1)):
         self.checkpoint_path = checkpoint_path
         self.input_size = input_size
         self.layer_index = 0
