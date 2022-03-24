@@ -259,3 +259,5 @@ cython_debug/
 output.csv
 
 .DS_Store
+
+model

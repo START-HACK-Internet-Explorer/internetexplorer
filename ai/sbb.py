@@ -8,7 +8,7 @@ from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStoppi
 from tensorflow.keras.layers import *
 
 class Sbb():
-    def __init__(self, checkpoint_path, output_size, input_size = (4, )):
+    def __init__(self, checkpoint_path, output_size, input_size = (1, 4)):
         self.checkpoint_path = checkpoint_path
         self.input_size = input_size
         self.layer_index = 0
@@ -28,15 +28,15 @@ class Sbb():
         outputs = Dense(self.output_size, activation='softmax')(w_o)
     
         model = models.Model(inputs=inputs, outputs=outputs, name="DENSE")
-        model.compile(optimizer=optimizers.Adam(), loss=tf.keras.losses.MeanSquaredError(), metrics=[mean_squared_error, Recall(), Precision()])
+        model.compile(optimizer=optimizers.Adam(), loss=tf.keras.losses.MeanSquaredError(), metrics=[mean_squared_error]) #, Recall(), Precision()
     
         return model
 
     def append_dense_layer(self, x, prefix):
         self.layer_index += 1
-        x = Dense(32, activation='relu', name=f"{prefix}-DENSE-{self.layer_index}")(x)
-        x = BatchNormalization(name=f"{prefix}-NORM-{self.layer_index}")(x)
-        x = Dropout(0.2, name=f"{prefix}-DROP-{self.layer_index}")(x)
+        x = Dense(256, activation='relu', name=f"{prefix}-DENSE-{self.layer_index}")(x)
+        #x = BatchNormalization(name=f"{prefix}-NORM-{self.layer_index}")(x)
+        #x = Dropout(0.2, name=f"{prefix}-DROP-{self.layer_index}")(x)
         return x
 
     def append_gru_layer(self, x, prefix, return_sequences = True, first_layer = False):
