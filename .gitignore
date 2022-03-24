@@ -257,3 +257,5 @@ cython_debug/
 #.idea/
 
 output.csv
+
+.DS_Store
