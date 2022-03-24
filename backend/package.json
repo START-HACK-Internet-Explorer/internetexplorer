@@ -18,7 +18,9 @@
     "typescript": "4.2.4"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "dotenv": "^10.0.0",
+    "moment": "^2.29.1",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v19.2.0"
   }
 }
