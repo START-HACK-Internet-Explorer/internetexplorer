@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { BackendService, JourneyInfo } from '../backend.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-search',
@@ -10,11 +10,12 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class SearchComponent {
 
-  journeyDetails: BehaviorSubject<JourneyInfo | null>;
+  journeyDetails: BehaviorSubject<JourneyInfo[]>;
+  journeyDetailsArray: JourneyInfo[] = [];
 
-  constructor(private backendService: BackendService, private activatedRoute:ActivatedRoute) {
-    this.journeyDetails = backendService.journeyInfo;
-    this.journeyDetails.subscribe(blah => console.log(blah))
+  constructor(private backendService: BackendService, private activatedRoute:ActivatedRoute, private router: Router) {
+    this.journeyDetails = backendService.journeyInfos;
+    this.journeyDetails.subscribe(items => this.journeyDetailsArray = items);
     this.activatedRoute.queryParams.subscribe(params => {
 
       let start = params['start'];
@@ -38,5 +39,10 @@ export class SearchComponent {
 
      //this.backendService.search('','',new Date(new Date().getTime() + 10000)))
     });
+  }
+
+  select(event: JourneyInfo) {
+    this.backendService.setJourneyInfo(event);
+    this.router.navigate(['result']);
   }
 }

@@ -89,7 +89,7 @@ const webSocket = app.ws('/*', {
     );
   },
   open: (ws) => {
-    ws.opened = { opened: true };
+    const opened = ws.opened = { opened: true };
     console.log('open');
     const splitQuery = ws.query.split('&');
     let userId = splitQuery.find((queryParam: string) => queryParam.match(/^user=[a-zA-Z0-9]{20}$/))?.replace(/^user=/, '');
@@ -110,7 +110,9 @@ const webSocket = app.ws('/*', {
     }
     ws.send(JSON.stringify({type: 'fail'}));
     setTimeout(() => {
-      ws.close();
+      if (opened.opened) {
+        ws.close();
+      }
     });
   },
   message: (ws, message, isBinary) => {
