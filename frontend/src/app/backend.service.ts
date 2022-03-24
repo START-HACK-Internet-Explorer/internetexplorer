@@ -66,6 +66,12 @@ export class BackendService {
     this.connected = false;
     this.retries++;
     if (!this.userId) {
+      const cookie = this.cookieService.get('internet-explorer');
+      if (cookie) {
+        this.userId = cookie;
+      }
+    }
+    if (!this.userId) {
       this.ws = new WebSocket(`${BACKEND_PROTOCOL}://${BACKEND_ADDRESS}:${BACKEND_PORT}/`);
     } else {
       this.ws = new WebSocket(`${BACKEND_PROTOCOL}://${BACKEND_ADDRESS}:${BACKEND_PORT}/?user=${this.userId}`);
@@ -92,7 +98,7 @@ export class BackendService {
   }
 
   search(start: string, stop: string, time: Date) {
-    if (start && start.length < 50 && stop && stop.length < 50 && time > new Date()) {
+    if (start && start.length < 50 && stop && stop.length < 50 && time) {
       const sendMessage: MessageToServer = { type: 'search', content: { start, stop, time } as Journey };
       this.journeyInfos.next([]);
       this.lastJourneyInfos = [];
@@ -101,9 +107,8 @@ export class BackendService {
   }
 
   setJourneyInfo(journeyInfo: JourneyInfo) {
-    console.log('dafasd');
     this.journeyInfo.next(journeyInfo);
-    const sendMessage: MessageToServer = { type: 'set', content: this.lastJourneyInfos.indexOf(journeyInfo) };
+    const sendMessage: MessageToServer = { type: 'set', content: this.lastJourneyInfos.findIndex(info => journeyInfo.start == info.start && journeyInfo.stop === info.stop && journeyInfo.time === info.time) };
     this.ws?.send(JSON.stringify(sendMessage));
   };
 
@@ -114,7 +119,6 @@ export class BackendService {
 
   private processInformation(event: { data: string }) {
     const msg: MessageFromServer = JSON.parse(event.data);
-    console.log(msg);
 
     switch (msg.type) {
       case 'connectionInfo':
@@ -130,10 +134,10 @@ export class BackendService {
         break;
 
       case 'journeyInfo':
-        const journeyInfo = msg.content as JourneyInfo[];
-        if (!this.lastSearch || (journeyInfo.every(info => this.lastSearch!.start === info.searchStart && this.lastSearch!.stop === info.searchStop && this.lastSearch!.time === info.searchTime))) {
-          this.journeyInfos.next(journeyInfo);
-          this.lastJourneyInfos = this.lastJourneyInfos;
+        const journeyInfos = msg.content as JourneyInfo[];
+        if (!this.lastSearch || (journeyInfos.every(info => this.lastSearch!.start === info.searchStart && this.lastSearch!.stop === info.searchStop && this.lastSearch!.time === info.searchTime))) {
+          this.journeyInfos.next(journeyInfos);
+          this.lastJourneyInfos = journeyInfos;
         }
         break;
 
@@ -141,6 +145,7 @@ export class BackendService {
         if (!this.connected) {
           this.userId = '';
           this.connectionFailed = true;
+          this.cookieService.delete('internet-explorer');
         } else {
           this.journeyInfos.next([]);
           this.lastJourneys.next([]);

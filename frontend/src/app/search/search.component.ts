@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { BackendService, JourneyInfo } from '../backend.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-search',
@@ -9,6 +10,10 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent {
+
+  start = '';
+  stop = '';
+  time = '';
 
   journeyDetails: BehaviorSubject<JourneyInfo[]>;
   journeyDetailsArray: JourneyInfo[] = [];
@@ -18,26 +23,23 @@ export class SearchComponent {
     this.journeyDetails.subscribe(items => this.journeyDetailsArray = items);
     this.activatedRoute.queryParams.subscribe(params => {
 
-      let start = params['start'];
-      let stop = params['stop'];
-      let time = params['time'];
-
-      console.log(start);
-      console.log(stop);
-      console.log(time);
-
+      this.start = params['start'];
+      this.stop = params['stop'];
+      this.time = params['time'];
+      const currentTime = moment(this.time).toDate();
 
       let first = true;
       this.backendService.connectionStateChanged.subscribe(connectionState => {
         if (connectionState) {
           if (first) {
-            this.backendService.search('Zug', 'Luzern', new Date(new Date().getTime() + 10000));
+            if (this.start, this.stop, currentTime) {
+              this.backendService.search(this.start, this.stop, currentTime);
+            }
           }
           first = false;
         }
       });
 
-     //this.backendService.search('','',new Date(new Date().getTime() + 10000)))
     });
   }
 

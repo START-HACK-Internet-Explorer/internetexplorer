@@ -147,14 +147,14 @@ const webSocket = app.ws('/*', {
             case 'set':
               if (typeof(receivedMessage.content) === 'number') {
                 const set = ws.user.previousSearchJourneys[receivedMessage.content];
-                if (set) {
+                if (set && !ws.user.journeys.find((item: any) => set.start === item.start && set.end === item.end && item.time === item.time)) {
                   ws.user.journeys.push(set);
                 }
               }
               break;
     
             case 'getLast':
-              ws.send(JSON.stringify({type: 'lastJourneys', content: ws.user.journeys} as MessageFromServer));
+              ws.send(JSON.stringify({type: 'lastJourneys', content: ws.user.journeys.slice(-5)} as MessageFromServer));
               break;
           }
         }
@@ -198,9 +198,7 @@ const searchJourney = async (journey: Journey): Promise<JourneyInfo[]> => {
         time: moment(journey.time).format('HH:MM'),
         direct: 1
       };
-      console.log(params);
       const response = await axios.get('http://transport.opendata.ch/v1/connections', { params });
-      console.log(response?.data);
       if (response?.data?.connections.length) {
         const connections = response.data.connections.map((connection: any) => ({
           searchStart: journey.start, searchStop: journey.stop, searchTime: journey.time,
