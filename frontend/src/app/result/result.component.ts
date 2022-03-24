@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import * as moment from 'moment';
 import { BehaviorSubject } from 'rxjs';
-import { BackendService } from '../backend.service';
+import { BackendService, JourneyInfo } from '../backend.service';
 
 
 @Component({
@@ -9,12 +11,29 @@ import { BackendService } from '../backend.service';
   styleUrls: ['./result.component.scss']
 })
 export class ResultComponent implements OnInit {
-  journeyDetails = new BehaviorSubject<boolean>(true);
+  journeyDetail = new BehaviorSubject<JourneyInfo | null>(null);
+  journeyDetailDirect: JourneyInfo | null = null;
 
-  constructor(private backendService: BackendService) { }
+  departureDate = '';
+  arrivalDate = '';
+  recommendedDate = '';
+  duration = '';
 
+  constructor(private backendService: BackendService, private router: Router) {
+    this.journeyDetail = backendService.journeyInfo;
+    this.journeyDetail.subscribe(item => this.journeyDetailDirect = item);
+  }
 
   ngOnInit(): void {
+    if (!this.journeyDetailDirect) {
+      this.router.navigateByUrl('/');
+    }
+    if (this.journeyDetailDirect) {
+      this.departureDate = moment(this.journeyDetailDirect.time).format('HH:MM:SS');
+      this.arrivalDate = moment(this.journeyDetailDirect.time).add(this.journeyDetailDirect.duration).format('HH:MM:SS');
+      this.recommendedDate = moment(this.journeyDetailDirect.recommended).format('HH:MM:SS');
+      this.duration = moment.duration(this.journeyDetailDirect.duration).humanize();
+    }
   }
 
 }

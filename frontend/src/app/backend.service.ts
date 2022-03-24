@@ -23,8 +23,8 @@ export interface JourneyInfo extends Journey {
 }
 
 interface MessageToServer {
-  type: 'search' | 'getLast';
-  content?: Journey;
+  type: 'search' | 'getLast' | 'set';
+  content?: Journey | number;
 }
 
 interface MessageFromServer {
@@ -47,6 +47,7 @@ export class BackendService {
   connectionState = false;
   connectionStateChanged: ReplaySubject<boolean> = new ReplaySubject<boolean>();
   lastSearch?: Journey;
+  lastJourneyInfos: JourneyInfo[] = [];
   private userId = '';
   private retries = 0;
   connected = false;
@@ -94,12 +95,16 @@ export class BackendService {
     if (start && start.length < 50 && stop && stop.length < 50 && time > new Date()) {
       const sendMessage: MessageToServer = { type: 'search', content: { start, stop, time } as Journey };
       this.journeyInfos.next([]);
+      this.lastJourneyInfos = [];
       this.ws?.send(JSON.stringify(sendMessage));
     }
   }
 
   setJourneyInfo(journeyInfo: JourneyInfo) {
+    console.log('dafasd');
     this.journeyInfo.next(journeyInfo);
+    const sendMessage: MessageToServer = { type: 'set', content: this.lastJourneyInfos.indexOf(journeyInfo) };
+    this.ws?.send(JSON.stringify(sendMessage));
   };
 
   getLast() {
@@ -128,6 +133,7 @@ export class BackendService {
         const journeyInfo = msg.content as JourneyInfo[];
         if (!this.lastSearch || (journeyInfo.every(info => this.lastSearch!.start === info.searchStart && this.lastSearch!.stop === info.searchStop && this.lastSearch!.time === info.searchTime))) {
           this.journeyInfos.next(journeyInfo);
+          this.lastJourneyInfos = this.lastJourneyInfos;
         }
         break;
 

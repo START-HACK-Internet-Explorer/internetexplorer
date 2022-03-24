@@ -1,2 +1,4 @@
-<p>18:00 2h aldkf</p>
-<p>Zug via Bern Zürich</p>
+<ng-container *ngIf="item">
+  <p>{{departureDate}} => {{duration}} => {{arrivalDate}}</p>
+  <p>{{item.start}} => {{item.stop}}</p>
+</ng-container>

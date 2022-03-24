@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-timeplace',
   templateUrl: './timeplace.component.html',
   styleUrls: ['./timeplace.component.scss']
 })
-export class TimeplaceComponent implements OnInit {
+export class TimeplaceComponent {
+
+  @Input() time = '';
+  @Input() place = '';
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
 
 }

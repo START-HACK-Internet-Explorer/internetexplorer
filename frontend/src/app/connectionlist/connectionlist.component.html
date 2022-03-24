@@ -1,3 +1,2 @@
-<p>connectionlist works!</p>
-<div *ngFor="let connection of items" (click)="selected.emit(connection)">{{connection.start}} => {{connection.stop}}: {{connection.duration}}
-</div>
+<app-connection *ngFor="let connection of items" [item]="connection" (click)="selected.emit(connection)">
+</app-connection>

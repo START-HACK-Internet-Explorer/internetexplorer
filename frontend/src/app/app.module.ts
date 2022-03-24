@@ -15,7 +15,7 @@ import { ConnectionlistComponent } from './connectionlist/connectionlist.compone
 import { QueryformComponent } from './queryform/queryform.component';
 import { SearchbuttonComponent } from './searchbutton/searchbutton.component';
 import { NoresultComponent } from './noresult/noresult.component';
-import { GraphComponent } from './graph/graph.component';
+import { ClockComponent } from './clock/clock.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +29,7 @@ import { GraphComponent } from './graph/graph.component';
     QueryformComponent,
     SearchbuttonComponent,
     NoresultComponent,
-    GraphComponent,
+    ClockComponent,
   ],
   imports: [
     BrowserModule,

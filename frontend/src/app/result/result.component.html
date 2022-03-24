@@ -1,17 +1,15 @@
-<p>result works!</p>
-<p *ngIf="journeyDetails | async">search works!</p>
-<div class="selectcontainer">
-    <app-timeplace> </app-timeplace>
+<div *ngIf="journeyDetailDirect" class="selectcontainer">
+    <app-timeplace [place]="journeyDetailDirect!.start" [time]="departureDate" > </app-timeplace>
     <div class="arrowtimeblock">
-      <p>2h</p>
+      <p>{{duration}}</p>
       <p>----></p>
     </div>
-    <app-timeplace></app-timeplace>
+    <app-timeplace [place]="journeyDetailDirect!.stop" [time]="arrivalDate"></app-timeplace>
   <div class="rectime">
-    <p>Recommended time: 15:00</p>
-  </div>
-  <div class="diagram">
-    <img src="assets/diagram_placeholder.jpg">
+    <p>Recommended time:</p>
+    <div class="clock">
+      <app-clock [displayNumber]="recommendedDate[0]"></app-clock><app-clock [displayNumber]="recommendedDate[1]"></app-clock><app-clock class="clock-margin" [displayNumber]="recommendedDate[3]"></app-clock><app-clock [displayNumber]="recommendedDate[4]"></app-clock>
+    </div>
   </div>
 
 </div>
