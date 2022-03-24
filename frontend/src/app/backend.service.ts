@@ -12,8 +12,9 @@ interface JourneyInfo extends Journey {
   start: string;
   stop: string;
   time: Date;
+  duration: number;
   spots: number;
-  occupied: [Date, number];
+  occupied: [Date, number][];
   recommended: Date;
   alternative: JourneyInfo[];
 }

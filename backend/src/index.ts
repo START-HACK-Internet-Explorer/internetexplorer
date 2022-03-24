@@ -10,10 +10,20 @@ interface JourneyInfo extends Journey {
   start: string;
   stop: string;
   time: Date;
+  duration: number;
   spots: number;
-  occupied: [Date, number];
+  occupied: [Date, number][];
   recommended: Date;
   alternative: JourneyInfo[];
+}
+
+interface JourneyFound extends Journey {
+  start: string;
+  startId: number;
+  stop: string;
+  stopId: number;
+  time: Date;
+  duration: number;
 }
 
 interface User {
@@ -31,6 +41,8 @@ interface MessageFromServer {
 }
 
 require('dotenv').config();
+const axios = require('axios').default;
+const moment = require('moment');
 
 const sslKeyFile = process.env.CONNECT_X_SSL_KEY_FILE || '';
 const sslCertFile = process.env.CONNECT_X_SSL_CERT_FILE || '';
@@ -99,36 +111,42 @@ const webSocket = app.ws('/*', {
     });
   },
   message: (ws, message, isBinary) => {
-    if (isBinary) {
-      ws.end();
-      return;
-    }
-    const user = ws.user;
-    const playerId = ws.playerId;
-    if (!user || !playerId) {
-      return;
-    }
-    let receivedMessage: MessageToServer | undefined;
-    try {
-      const buffer = Buffer.from(message).toString();
-      receivedMessage = JSON.parse(buffer);
-    } catch (e: any) {}
-    if (receivedMessage) {
-      switch (receivedMessage.type) {
-        case 'search':
-          const result = searchJourney(receivedMessage.content as JourneyInfo);
-          if (result) {
-            ws.send(JSON.stringify({type: 'journeyInfo', content: result} as MessageFromServer));
-          } else {
-            ws.send(JSON.stringify({type: 'fail'} as MessageFromServer));
+    (async () => {
+      try {
+        if (isBinary) {
+          ws.end();
+          return;
+        }
+        const userId = ws.userId;
+        if (!userId) {
+          return;
+        }
+        let receivedMessage: MessageToServer | undefined;
+        try {
+          const buffer = Buffer.from(message).toString();
+          receivedMessage = JSON.parse(buffer);
+        } catch (e: any) {}
+        if (receivedMessage) {
+          switch (receivedMessage.type) {
+            case 'search':
+              const result = await searchJourney(receivedMessage.content as JourneyInfo);
+              if (result) {
+                ws.send(JSON.stringify({type: 'journeyInfo', content: result} as MessageFromServer));
+              } else {
+                ws.send(JSON.stringify({type: 'fail'} as MessageFromServer));
+              }
+              break;
+    
+            case 'getLast':
+              ws.send(JSON.stringify({type: 'lastJourneys', content: ws.user} as MessageFromServer));
+              break;
           }
-          break;
-
-        case 'getLast':
-          ws.send(JSON.stringify({type: 'lastJourneys', content: ws.user} as MessageFromServer));
-          break;
+        }
+      } catch (e: any) {
+        console.error(e);
+        process.exit(1);
       }
-    }
+    })();
   },
   close: async (ws) => {
     ws.opened.opened = false;
@@ -154,7 +172,29 @@ const adduser = (): string => {
     return userId;
 };
 
-const searchJourney = (journey: Journey): JourneyInfo | null => {
+const searchJourney = async (journey: Journey): Promise<JourneyInfo | null> => {
+  try {
+    if (journey.start && journey.stop && journey.time) {
+      const params = {
+        from: journey.start,
+        to: journey.stop,
+        date: moment(journey.time).format('YYYY-MM-DD'),
+        time: moment(journey.time).format('HH:MM'),
+        direct: 1
+      };
+      console.log(params);
+      const response = await axios.get('http://transport.opendata.ch/v1/connections', { params });
+      console.log(response?.data);
+      if (response?.data?.connections.length) {
+        return response.data.connections.map((connection: any) => ({
+          start: connection.from.station.name, stop: connection.to.station.name, time: moment(connection.from.departure),
+          duration: moment.duration(connection.duration.replace(/d\d{2}:\d{2}:\d{2}$/, '') + ' ' + connection.duration.replace(/^\d{2}d/, '')).valueOf(), spots: 3, occupied: [[new Date(new Date().getTime() + 3000), 60], [new Date(new Date().getTime() + 6000), 70], [new Date(new Date().getTime() + 9000), 80]], recommended: new Date(new Date().getTime() + 6000), alternative: response?.connections
+        }) as JourneyInfo);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
   return null;
 };
 
