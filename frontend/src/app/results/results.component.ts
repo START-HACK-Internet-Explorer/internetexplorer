@@ -1,4 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { JQueryStyleEventEmitter } from 'rxjs/internal/observable/fromEvent';
+import { BackendService, JourneyInfo } from '../backend.service';
+
 
 @Component({
   selector: 'app-results',
@@ -7,7 +12,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ResultsComponent implements OnInit {
 
-  constructor() { }
+ 
+  constructor(private backendService: BackendService) { }
+
 
   ngOnInit(): void {
   }

@@ -2,13 +2,13 @@ import { Injectable } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
 import { BehaviorSubject, ReplaySubject } from "rxjs";
 
-interface Journey {
+export interface Journey {
   start: string;
   stop: string;
   time: Date;
 }
 
-interface JourneyInfo extends Journey {
+export interface JourneyInfo extends Journey {
   searchStart: string,
   searchStop: string,
   searchTime: Date,
@@ -44,6 +44,8 @@ export class BackendService {
   lastJourneys: BehaviorSubject<JourneyInfo[]> = new BehaviorSubject([] as JourneyInfo[]) as BehaviorSubject<JourneyInfo[]>;
   journeyInfos: BehaviorSubject<JourneyInfo[]> = new BehaviorSubject([] as JourneyInfo[]) as BehaviorSubject<JourneyInfo[]>;
   journeyInfo: BehaviorSubject<JourneyInfo | null> = new BehaviorSubject(null) as BehaviorSubject<JourneyInfo | null>;
+  connectionState = false;
+  connectionStateChanged: ReplaySubject<boolean> = new ReplaySubject<boolean>();
   lastSearch?: Journey;
   private userId = '';
   private retries = 0;
@@ -68,10 +70,18 @@ export class BackendService {
       this.ws = new WebSocket(`${BACKEND_PROTOCOL}://${BACKEND_ADDRESS}:${BACKEND_PORT}/?user=${this.userId}`);
     }
     this.ws.onmessage = (event => {
+      if (!this.connectionState) {
+        this.connectionState = true;
+        this.connectionStateChanged.next(true);
+      }
       this.processInformation(event);
       this.retries = 0;
     });
     this.ws.onclose = (event => {
+      if (this.connectionState) {
+        this.connectionState = false;
+        this.connectionStateChanged.next(false);
+      }
       if (!this.connectionFailed) {
         setTimeout(() => {
           this.connect();
