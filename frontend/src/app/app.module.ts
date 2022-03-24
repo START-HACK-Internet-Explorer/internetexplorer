@@ -16,6 +16,8 @@ import { QueryformComponent } from './queryform/queryform.component';
 import { SearchbuttonComponent } from './searchbutton/searchbutton.component';
 import { NoresultComponent } from './noresult/noresult.component';
 import { ClockComponent } from './clock/clock.component';
+import { HeaderComponent } from './header/header.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -30,11 +32,13 @@ import { ClockComponent } from './clock/clock.component';
     SearchbuttonComponent,
     NoresultComponent,
     ClockComponent,
+    HeaderComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
