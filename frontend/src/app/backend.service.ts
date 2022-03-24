@@ -9,6 +9,9 @@ interface Journey {
 }
 
 interface JourneyInfo extends Journey {
+  searchStart: string,
+  searchStop: string,
+  searchTime: Date,
   start: string;
   stop: string;
   time: Date;
@@ -26,7 +29,7 @@ interface MessageToServer {
 
 interface MessageFromServer {
   type: 'connectionInfo' | 'journeyInfo' | 'fail' | 'lastJourneys';
-  content?: string | JourneyInfo | JourneyInfo[];
+  content?: string | JourneyInfo[];
 }
 
 const BACKEND_PROTOCOL = 'ws';
@@ -38,7 +41,8 @@ const BACKEND_PORT = '8084';
 })
 export class BackendService {
   private ws?: WebSocket;
-  lastJourneys: ReplaySubject<JourneyInfo[]> = new ReplaySubject();
+  lastJourneys: BehaviorSubject<JourneyInfo[]> = new BehaviorSubject([] as JourneyInfo[]) as BehaviorSubject<JourneyInfo[]>;
+  journeyInfos: BehaviorSubject<JourneyInfo[]> = new BehaviorSubject([] as JourneyInfo[]) as BehaviorSubject<JourneyInfo[]>;
   journeyInfo: BehaviorSubject<JourneyInfo | null> = new BehaviorSubject(null) as BehaviorSubject<JourneyInfo | null>;
   lastSearch?: Journey;
   private userId = '';
@@ -79,10 +83,14 @@ export class BackendService {
   search(start: string, stop: string, time: Date) {
     if (start && start.length < 50 && stop && stop.length < 50 && time > new Date()) {
       const sendMessage: MessageToServer = { type: 'search', content: { start, stop, time } as Journey };
-      this.journeyInfo.next(null);
+      this.journeyInfos.next([]);
       this.ws?.send(JSON.stringify(sendMessage));
     }
   }
+
+  setJourneyInfo(journeyInfo: JourneyInfo) {
+    this.journeyInfo.next(journeyInfo);
+  };
 
   getLast() {
     const sendMessage: MessageToServer = { type: 'getLast' };
@@ -107,9 +115,9 @@ export class BackendService {
         break;
 
       case 'journeyInfo':
-        const journeyInfo = msg.content as JourneyInfo;
-        if (!this.lastSearch || (this.lastSearch.start === journeyInfo.start && this.lastSearch.stop === journeyInfo.stop && this.lastSearch.time === journeyInfo.time)) {
-          this.journeyInfo.next(journeyInfo);
+        const journeyInfo = msg.content as JourneyInfo[];
+        if (!this.lastSearch || (journeyInfo.every(info => this.lastSearch!.start === info.searchStart && this.lastSearch!.stop === info.searchStop && this.lastSearch!.time === info.searchTime))) {
+          this.journeyInfos.next(journeyInfo);
         }
         break;
 
@@ -118,6 +126,8 @@ export class BackendService {
           this.userId = '';
           this.connectionFailed = true;
         } else {
+          this.journeyInfos.next([]);
+          this.lastJourneys.next([]);
           alert('failed');
         }
         break;
