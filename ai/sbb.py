@@ -3,7 +3,7 @@ import os
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import models, optimizers
-from tensorflow.keras.metrics import mean_squared_error, Recall, Precision
+from tensorflow.keras.metrics import binary_accuracy, Recall, Precision, CategoricalAccuracy
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStopping
 from tensorflow.keras.layers import *
 
@@ -28,13 +28,13 @@ class Sbb():
         outputs = Dense(self.output_size, activation='softmax')(w_o)
     
         model = models.Model(inputs=inputs, outputs=outputs, name="DENSE")
-        model.compile(optimizer=optimizers.Adam(), loss=tf.keras.losses.MeanSquaredError(), metrics=[mean_squared_error]) #, Recall(), Precision()
+        model.compile(optimizer=optimizers.Adam(), loss=tf.keras.losses.CategoricalCrossentropy(), metrics=[CategoricalAccuracy()]) #, Recall(), Precision()
     
         return model
 
     def append_dense_layer(self, x, prefix):
         self.layer_index += 1
-        x = Dense(256, activation='relu', name=f"{prefix}-DENSE-{self.layer_index}")(x)
+        x = Dense(32, activation='relu', name=f"{prefix}-DENSE-{self.layer_index}")(x)
         #x = BatchNormalization(name=f"{prefix}-NORM-{self.layer_index}")(x)
         #x = Dropout(0.2, name=f"{prefix}-DROP-{self.layer_index}")(x)
         return x
