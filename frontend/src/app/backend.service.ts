@@ -2,13 +2,13 @@ import { Injectable } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
 import { BehaviorSubject, ReplaySubject } from "rxjs";
 
-interface Journey {
+export interface Journey {
   start: string;
   stop: string;
   time: Date;
 }
 
-interface JourneyInfo extends Journey {
+export interface JourneyInfo extends Journey {
   searchStart: string,
   searchStop: string,
   searchTime: Date,
