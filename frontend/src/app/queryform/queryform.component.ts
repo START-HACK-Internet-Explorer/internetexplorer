@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import * as moment from 'moment';
 import { SearchService } from '../search.service';
 
 @Component({
@@ -7,11 +9,11 @@ import { SearchService } from '../search.service';
   styleUrls: ['./queryform.component.scss']
 })
 export class QueryformComponent implements OnInit {
-  from?: string;
-  to?:string;
-  departuretime?:string;
-  
-  constructor(private searchservice:SearchService) {
+  @Input() start?: string;
+  @Input() stop?:string;
+  @Input() time?: string;
+
+  constructor(private searchservice:SearchService, private router: Router) {
     this.searchservice.search.subscribe(x => this.sendData())
   }
 
@@ -19,12 +21,14 @@ export class QueryformComponent implements OnInit {
   }
 
   sendData(){
-    const dataToSend ={
-      from: this.from,
-      to: this.to,
-      departuretime: this.departuretime,
+    if (this.start && this.stop && this.time) {
+      const dataToSend = {
+        start: this.start,
+        stop: this.stop,
+        time: this.time
+      }
+      this.router.navigate(['/search'], { queryParams: dataToSend });
     }
-    console.log(dataToSend)
   }
 
 }

@@ -1,5 +1,5 @@
-<input [(ngModel)]="from" type="text" id="from" name="from" placeholder="From">
+<input [(ngModel)]="start" type="text" id="from" name="from" placeholder="From">
 <br>
-<input [(ngModel)]="to" type="text" id="to" name="to" placeholder="To">
+<input [(ngModel)]="stop" type="text" id="to" name="to" placeholder="To">
 <br>
-<input [(ngModel)]="departuretime" (keydown.enter)="sendData()" type="text" id="departuretime" name="departuretime" placeholder="Departure Time">
+<input [(ngModel)]="time" (keydown.enter)="sendData()" type="datetime-local" id="departuretime" name="departuretime" placeholder="Departure Time">

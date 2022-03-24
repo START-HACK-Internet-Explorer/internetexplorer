@@ -1,3 +1,4 @@
-<app-queryform></app-queryform>
+<app-queryform [start]="start" [stop]="stop" [time]="time"></app-queryform>
+<app-searchbutton></app-searchbutton>
 <p>Results</p>
 <app-connectionlist [items]="journeyDetailsArray" (selected)="select($event)"></app-connectionlist>
