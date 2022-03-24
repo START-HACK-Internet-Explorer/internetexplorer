@@ -20,7 +20,7 @@ class Sbb():
         inputs = keras.Input(shape=(self.input_size))
 
         # Worker 1
-        w_1 = self.append_dense_layer(inputs, 'DENSE-1')
+        w_1 = Flatten()(inputs)
         w_2 = self.append_dense_layer(w_1, 'DENSE-1')
         w_2 = self.append_dense_layer(w_2, 'DENSE-1')
         w_o = self.append_dense_layer(w_2, 'DENSE-1')
