@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
-import { ReplaySubject, Subject } from "rxjs";
+import { BehaviorSubject, ReplaySubject } from "rxjs";
 
 interface Journey {
   start: string;
@@ -38,7 +38,7 @@ const BACKEND_PORT = '8084';
 export class BackendService {
   private ws?: WebSocket;
   lastJourneys: ReplaySubject<JourneyInfo[]> = new ReplaySubject();
-  journeyInfo: Subject<JourneyInfo> = new Subject();
+  journeyInfo: BehaviorSubject<JourneyInfo | null> = new BehaviorSubject(null) as BehaviorSubject<JourneyInfo | null>;
   lastSearch?: Journey;
   private userId = '';
   private retries = 0;
@@ -78,6 +78,7 @@ export class BackendService {
   search(start: string, stop: string, time: Date) {
     if (start && start.length < 50 && stop && stop.length < 50 && time > new Date()) {
       const sendMessage: MessageToServer = { type: 'search', content: { start, stop, time } as Journey };
+      this.journeyInfo.next(null);
       this.ws?.send(JSON.stringify(sendMessage));
     }
   }
