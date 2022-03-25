@@ -1,15 +1,18 @@
-<div *ngIf="journeyDetailDirect" class="selectcontainer">
+<ng-container *ngIf="journeyDetailDirect">
+  <div class="selectcontainer">
     <app-timeplace [place]="journeyDetailDirect!.start" [time]="departureDate" > </app-timeplace>
     <div class="arrowtimeblock">
       <p>{{duration}}</p>
-      <p>----></p>
+      <p>➔</p>
     </div>
     <app-timeplace [place]="journeyDetailDirect!.stop" [time]="arrivalDate"></app-timeplace>
-  <div class="rectime">
-    <p>Recommended time:</p>
+  </div>
+    <div class="rectime">
+    <h2>Recommended time</h2>
     <div class="clock">
       <app-clock [displayNumber]="recommendedDate[0]"></app-clock><app-clock [displayNumber]="recommendedDate[1]"></app-clock><app-clock class="clock-margin" [displayNumber]="recommendedDate[3]"></app-clock><app-clock [displayNumber]="recommendedDate[4]"></app-clock>
     </div>
-  </div>
-
-</div>
+<ng-container *ngIf="journeyDetailDirect.alternative?.length">
+  <h1>Previous navigation</h1>
+  <app-connectionlist [items]="journeyDetailDirect.alternative" (selected)="select($event)"></app-connectionlist>
+</ng-container>

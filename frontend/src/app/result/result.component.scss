@@ -3,9 +3,55 @@
   flex-direction: row;
   padding: 30px;
   border-radius: 30px;
-  transform: scale(0.5);
+  transform: scale(0.4);
+  margin-left: calc(-155px + 5vw);
+  margin-top: -105px;
 }
 
 .clock-margin {
   margin-left: 60px;
+}
+
+.selectcontainer {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.rectime {
+  margin-top: 3rem;
+}
+
+h1 {
+  margin: 1vh;
+  margin-top: -2vh;
+  font-weight: bold;
+}
+
+h2 {
+  margin: 1vh;
+  margin-top: -2vh;
+  font-weight: bold;
+  text-align: center;
+}
+
+.arrowtimeblock {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.3rem;
+  padding-top: 0.6rem;
+
+  p:first-child {
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.35rem;
+  }
+
+  p:last-child {
+    font-weight: bold;
+    text-align: center;
+    font-size: 2.25rem;
+  }
 }

@@ -29,11 +29,15 @@ export class ResultComponent implements OnInit {
       this.router.navigateByUrl('/');
     }
     if (this.journeyDetailDirect) {
-      this.departureDate = moment(this.journeyDetailDirect.time).format('HH:MM:SS');
-      this.arrivalDate = moment(this.journeyDetailDirect.time).add(this.journeyDetailDirect.duration).format('HH:MM:SS');
-      this.recommendedDate = moment(this.journeyDetailDirect.recommended).format('HH:MM:SS');
+      this.departureDate = moment(this.journeyDetailDirect.time).format('HH:MS');
+      this.arrivalDate = moment(this.journeyDetailDirect.time).add(this.journeyDetailDirect.duration).format('HH:MM');
+      this.recommendedDate = moment(this.journeyDetailDirect.recommended).format('HH:MM');
       this.duration = moment.duration(this.journeyDetailDirect.duration).humanize();
     }
   }
 
+  select(event: JourneyInfo) {
+    this.backendService.setJourneyInfo(event);
+    this.router.navigate(['result']);
+  }
 }

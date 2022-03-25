@@ -196,7 +196,9 @@ const searchJourney = async (journey: Journey): Promise<JourneyInfo[]> => {
         to: journey.stop,
         date: moment(journey.time).format('YYYY-MM-DD'),
         time: moment(journey.time).format('HH:MM'),
-        direct: 1
+        direct: 1,
+        bike: 1,
+        transportations: ['train']
       };
       const response = await axios.get('http://transport.opendata.ch/v1/connections', { params });
       if (response?.data?.connections.length) {

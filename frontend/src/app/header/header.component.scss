@@ -3,12 +3,17 @@
     display: flex;
     color:lightgray;
     font-size: 15pt;
+    height: 7.5vh;
+    align-items: middle;
 }
 
-.header h1{
-    padding:0;
-    float:right;
-    
+.header h1 {
+    padding: 0;
+    margin: 0;
+    font-size: 6vh;
+    line-height: 6vh;
+    margin-top: 0.8vh;
+    font-weight: normal;
 }
 
 .header p:hover{
@@ -17,12 +22,17 @@
 }
 
 .logo {
-    float:left;
+  height: 7.5vh;
+  margin: 1.75vh;
 }
 
 .header img{
-    max-width: 30%;
-    min-height: 20pt;
+    height: 4vh;
+}
+
+h1 {
+  margin: 1vh;
+  font-weight: bold;
 }
 
 

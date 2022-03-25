@@ -1,4 +1,14 @@
 <ng-container *ngIf="item">
-  <p>{{departureDate}} => {{duration}} => {{arrivalDate}}</p>
-  <p>{{item.start}} => {{item.stop}}</p>
+  <div class="first column">
+    {{departureDate}}
+    <span class="bold">{{item.start}}</span>
+  </div>
+  <div class="second column">
+    {{duration}}
+    <br>
+  </div>
+  <div class="third column">
+    {{arrivalDate}}
+    <span class="bold">{{item.stop}}</span>
+  </div>
 </ng-container>

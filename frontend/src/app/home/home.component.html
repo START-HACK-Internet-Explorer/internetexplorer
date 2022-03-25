@@ -1,6 +1,6 @@
 <app-queryform [time]="time"></app-queryform>
 <app-searchbutton></app-searchbutton>
 <ng-container *ngIf="journeyDetailsArray.length">
-  <p>Previous navigation</p>
+  <h1>Previous navigation</h1>
   <app-connectionlist [items]="journeyDetailsArray" (selected)="select($event)"></app-connectionlist>
 </ng-container>
