@@ -1,0 +1,18 @@
+:host {
+  display: flex;
+  justify-content: center;
+  margin: 2vh;
+}
+
+button {
+  width: auto;
+  height: 12vw;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin: 0;
+  padding: 0.4rem;
+  background-color: rgb(206, 206, 206);
+  border: solid rgb(206, 206, 206) 0.1rem;
+  border-radius: 1rem;
+  box-shadow: 0.1rem 0.1rem 0 rgb(163, 163, 163);
+}
