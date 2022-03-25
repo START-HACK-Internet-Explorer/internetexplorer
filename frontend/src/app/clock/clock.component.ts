@@ -28,6 +28,9 @@ export class ClockComponent implements OnInit {
       case '3':
         [0,1,2,3,6].forEach(item => this.numbers[item] = true);
         break;
+      case '4':
+        [1,2,5,6].forEach(item => this.numbers[item] = true);
+        break;
       case '5':
         [0,2,3,5,6].forEach(item => this.numbers[item] = true);
         break;

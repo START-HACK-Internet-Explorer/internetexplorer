@@ -147,7 +147,7 @@ const webSocket = app.ws('/*', {
             case 'set':
               if (typeof(receivedMessage.content) === 'number') {
                 const set = ws.user.previousSearchJourneys[receivedMessage.content];
-                if (set && !ws.user.journeys.find((item: any) => set.start === item.start && set.end === item.end && item.time === item.time)) {
+                if (set && !ws.user.journeys.find((item: any) => set.start === item.start && set.end === item.end && set.time === item.time)) {
                   ws.user.journeys.push(set);
                 }
               }
@@ -205,7 +205,7 @@ const searchJourney = async (journey: Journey): Promise<JourneyInfo[]> => {
         const connections = response.data.connections.map((connection: any) => ({
           searchStart: journey.start, searchStop: journey.stop, searchTime: journey.time,
           start: connection.from.station.name, stop: connection.to.station.name, time: moment(connection.from.departure),
-          duration: moment.duration(connection.duration.replace(/d\d{2}:\d{2}:\d{2}$/, '') + ' ' + connection.duration.replace(/^\d{2}d/, '')).valueOf(), spots: 3, occupied: [[new Date(new Date().getTime() + 3000), 60], [new Date(new Date().getTime() + 6000), 70], [new Date(new Date().getTime() + 9000), 80]], recommended: new Date(new Date().getTime() + 6000), alternative: response?.connections
+          duration: (moment.duration(parseInt(connection.duration.replace(/d\d{2}:\d{2}:\d{2}$/, ''))) * 24 * 60 * 60) + moment.duration(connection.duration.replace(/^\d{2}d/, '')).valueOf(), spots: 3, occupied: [[new Date(new Date().getTime() + 3000), 60], [new Date(new Date().getTime() + 6000), 70], [new Date(new Date().getTime() + 9000), 80]], recommended: new Date(new Date().getTime() + 6000), alternative: response?.connections
         })) as JourneyInfo[];
         return connections;
       }
