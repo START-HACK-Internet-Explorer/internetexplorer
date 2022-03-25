@@ -29,9 +29,9 @@ export class ResultComponent implements OnInit {
       this.router.navigateByUrl('/');
     }
     if (this.journeyDetailDirect) {
-      this.departureDate = moment(this.journeyDetailDirect.time).format('HH:MS');
-      this.arrivalDate = moment(this.journeyDetailDirect.time).add(this.journeyDetailDirect.duration).format('HH:MM');
-      this.recommendedDate = moment(this.journeyDetailDirect.recommended).format('HH:MM');
+      this.departureDate = moment(this.journeyDetailDirect.time).format('hh:mm');
+      this.arrivalDate = moment(this.journeyDetailDirect.time).add(this.journeyDetailDirect.duration).format('hh:mm');
+      this.recommendedDate = moment(this.journeyDetailDirect.recommended).format('hh:mm');
       this.duration = moment.duration(this.journeyDetailDirect.duration).humanize();
     }
   }

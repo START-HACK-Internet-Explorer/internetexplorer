@@ -19,8 +19,10 @@ export class ConnectionComponent implements OnChanges {
 
   ngOnChanges(): void {
     if (this.item) {
-      this.departureDate = moment(this.item.time).format('HH:MM');
-      this.arrivalDate = moment(this.item.time).add(this.item.duration).format('HH:MM');
+      const departure = moment(this.item.time);
+      this.departureDate = departure.format("hh:mm");
+      const arrival = moment(new Date(departure.valueOf() + this.item.duration));
+      this.arrivalDate = arrival.format('hh:mm');
       this.duration = moment.duration(this.item.duration).humanize();
     }
   }
